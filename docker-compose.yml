@@ -1,0 +1,28 @@
+# Локальная БД для разработки.
+# Запуск: docker compose up -d
+# Стоп:   docker compose down
+#
+# Данные совпадают с DATABASE_URL в .env.
+# На хосте порт 5433 (5432 часто занят другим Postgres).
+# postgres://todo:todo@localhost:5433/todo?sslmode=disable
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: todo-api-postgres
+    environment:
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: todo
+      POSTGRES_DB: todo
+    ports:
+      - "5433:5432"
+    volumes:
+      - todo_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo -d todo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  todo_pg_data:
